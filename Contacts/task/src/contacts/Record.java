@@ -1,15 +1,13 @@
 package contacts;
 
-import java.time.LocalDateTime;
-
 public class Record {
-    private LocalDateTime created;
-    private LocalDateTime lastModified;
-    private String phoneNumber;
+    protected String created;
+    protected String lastModified;
+    protected String number;
 
-    public Record(String phoneNumber, LocalDateTime created) {
+    protected Record(String number, String created) {
         this.created = created;
         this.lastModified = created;
-        this.phoneNumber = phoneNumber;
+        this.number = number;
     }
 }
