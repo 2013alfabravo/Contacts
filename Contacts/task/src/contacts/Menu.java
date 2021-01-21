@@ -33,9 +33,9 @@ public class Menu {
         return this;
     }
 
-    public void execute(String itemName) {
+    public void execute(String title) {
         Optional<MenuItem> item = items.stream()
-                .filter(it -> it.title.equals(itemName))
+                .filter(it -> it.title.equals(title))
                 .findFirst();
 
         item.ifPresent(MenuItem::execute);
@@ -46,6 +46,7 @@ public class Menu {
         return title + " " +
                 items.stream()
                         .map(it -> it.title)
-                        .collect(Collectors.joining(", ", "(", ")")) + ": ";
+                        .collect(Collectors.joining(
+                                ", ", "(", ")")) + ": ";
     }
 }

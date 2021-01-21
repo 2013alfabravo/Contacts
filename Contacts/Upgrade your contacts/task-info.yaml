@@ -13,50 +13,6 @@ files:
         }
     }
   learner_created: false
-- name: src/contacts/Contact.java
-  visible: true
-  text: |
-    package contacts;
-
-    public class Contact {
-        private static final String NO_NUMBER = "[no number]";
-
-        private String firstName;
-        private String lastName;
-        private String phoneNumber;
-
-        public Contact(String firstName, String lastName, String phoneNumber) {
-            this.firstName = firstName;
-            this.lastName = lastName;
-            if (phoneNumber.isEmpty()) {
-                this.phoneNumber = NO_NUMBER;
-            } else {
-                this.phoneNumber = phoneNumber;
-            }
-        }
-
-        public void setFirstName(String firstName) {
-            this.firstName = firstName;
-        }
-
-        public void setLastName(String lastName) {
-            this.lastName = lastName;
-        }
-
-        public void setPhoneNumber(String phoneNumber) {
-            if (phoneNumber.isEmpty()) {
-                this.phoneNumber = NO_NUMBER;
-            } else {
-                this.phoneNumber = phoneNumber;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return firstName + " " + lastName + ", " + phoneNumber;
-        }
-    }
-  learner_created: false
 - name: src/contacts/Menu.java
   visible: true
   text: |
@@ -535,6 +491,18 @@ files:
     \      catch (Exception ex) {\n            return new CheckResult(false, \"Can't\
     \ check the answer\");\n        }\n    }\n}\n"
   learner_created: false
+- name: src/contacts/Business.java
+  visible: true
+  learner_created: true
+- name: src/contacts/Record.java
+  visible: true
+  learner_created: true
+- name: src/contacts/Person.java
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/43/stages/230/implement#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations!
+  time: Thu, 21 Jan 2021 01:42:48 UTC
 record: 3
