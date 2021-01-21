@@ -10,15 +10,15 @@
 
 <p>The list of records should contain both people and organizations. You can accomplish that if the list with records contains elements of the base class, not the specific classes.</p>
 
-<p>There is one problem with that: how can you edit the fields that correspond to specific classes, like the address of an organization? One of the solutions is to create a final Boolean field isPerson in the base class. After that, when editing the record, first check this field, then cast to the corresponding class and then edit the field. This is a bad, workaround solution, but we will write a more general solution in the next stage.</p>
+<p>There is one problem with that: how can you edit the fields that correspond to specific classes, like the address of an organization? One of the solutions is to create a final Boolean field <code class="java">isPerson</code> in the base class. After that, when editing the record, first check this field, then cast to the corresponding class and then edit the field. This is a bad, workaround solution, but we will write a more general solution in the next stage.</p>
 
 <p>Also, in this stage, you can improve the base class so that it has more than one field. You should implement fields that store the date of this record creation and the date of the last edit.</p>
 
 <p><div class="alert alert-warning">Use an empty line to separate different actions, like in the example.</div></p>
 
-<h2 style="text-align: center;">Output example</h2>
+<h2 style="text-align: center;">Example</h2>
 
-<p>Below is an example of how your output might look. The symbol <code class="java">&gt;</code> represents the user input.</p>
+<p>Below is an example of how your output might look. The symbol <code class="java">&gt; </code> represents the user input.</p>
 
 <pre><code class="language-no-highlight">Enter action (add, remove, edit, count, info, exit): &gt; add
 Enter the type (person, organization): &gt; person

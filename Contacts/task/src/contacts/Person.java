@@ -2,52 +2,85 @@ package contacts;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 
 public class Person extends Record {
-    private String name;
     private String surname;
-    private String birthDate;
+    private LocalDate birthDate;
     private String gender;
-    private boolean isPerson = true;
 
     private Person(String name,
                    String surname,
-                   String birthDate,
+                   LocalDate birthDate,
                    String gender,
                    String number,
-                   String created) {
+                   LocalDateTime created) {
 
-        super(number, created);
+        super(name, number, created);
         this.name = name;
         this.surname = surname;
         this.birthDate = birthDate;
         this.gender = gender;
     }
 
-    @Override
-    public String toString() {
-        return "Name: " + name + "\n" +
-                "Surname: " + surname + '\n' +
-                "Birth date: " + birthDate + "\n" +
-                "Gender: " + gender + '\n' +
-                "Number: " + super.number + "\n" +
-                "Time created: " + super.created + "\n" +
-                "Time last edit: " + super.lastModified;
+    public String getSurname() {
+        return getOrDefault(surname);
     }
 
-    public static Builder builder() {
+    public void setSurname(String surname) {
+        this.surname = surname;
+        updateLastModified();
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+        updateLastModified();
+    }
+
+    public String getGender() {
+        return getOrDefault(gender);
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+        updateLastModified();
+    }
+
+    @Override
+    public String getName() {
+        return name + " " + surname;
+    }
+
+    @Override
+    public Boolean isPerson() {
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Name: " + super.getName() + "\n" +
+                "Surname: " + getSurname() + '\n' +
+                "Birth date: " + getBirthDateAsString() + "\n" +
+                "Gender: " + getGender() + '\n' +
+                "Number: " + super.getNumber() + "\n" +
+                "Time created: " + super.getTimeCreatedAsString() + "\n" +
+                "Time last edit: " + super.getTimeLastModifiedAsString();
+    }
+
+    public String getBirthDateAsString() {
+        return this.birthDate == null ? "[no data]" : this.birthDate.toString();
+    }
+
+    public static Person.Builder builder() {
         return new Builder();
     }
 
-    static class Builder {
+    public static class Builder {
         private String name;
         private String surname;
-        private String birthDate;
+        private LocalDate birthDate;
         private String gender;
         private String number;
-        private String created;
+        private LocalDateTime created;
 
         public Builder setName(String name) {
             this.name = name;
@@ -59,7 +92,7 @@ public class Person extends Record {
             return this;
         }
 
-        public Builder setBirthDate(String date) {
+        public Builder setBirthDate(LocalDate date) {
             this.birthDate = date;
             return this;
         }
@@ -75,7 +108,7 @@ public class Person extends Record {
         }
 
         public Builder setCreated(LocalDateTime dateTime) {
-            this.created = dateTime.truncatedTo(ChronoUnit.MINUTES).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            this.created = dateTime;
             return this;
         }
 

@@ -1,5 +1,8 @@
 package contacts;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -7,7 +10,9 @@ public class Application {
     private static final Scanner scanner = new Scanner(System.in);
 
     private Menu mainMenu;
-    private Menu editMenu;
+    private Menu personEditMenu;
+    private Menu businessEditMenu;
+    private Menu recordSelectMenu;
     private final PhoneBook phoneBook;
     private int selectedRecordIndex;
     private boolean isRunning;
@@ -33,19 +38,30 @@ public class Application {
                 .addMenuItem("remove", this::removeContact)
                 .addMenuItem("edit", this::editContact)
                 .addMenuItem("count", this::getContactsCount)
-                .addMenuItem("list", this::listContacts)
+                .addMenuItem("info", this::getInfo) // fixme make getInfo()!!
                 .addMenuItem("exit", this::exit);
 
-        editMenu = new Menu().setTitle("Select a field")
+        personEditMenu = new Menu().setTitle("Select a field")
                 .addMenuItem("name", this::updateName)
                 .addMenuItem("surname", this::updateSurname)
+                .addMenuItem("birth", this::updateBirthDate)
+                .addMenuItem("gender", this::updateGender)
                 .addMenuItem("number", this::updateNumber);
+
+        businessEditMenu = new Menu().setTitle("Select a field")
+                .addMenuItem("name", this::updateName)
+                .addMenuItem("address", this::updateAddress)
+                .addMenuItem("number", this::updateNumber);
+
+        recordSelectMenu = new Menu().setTitle("Enter the type")
+                .addMenuItem("person", this::addPerson)
+                .addMenuItem("organization", this::addOrganization);
 
     }
 
     private void removeContact() {
         if (phoneBook.getRecordsCount() == 0) {
-            System.out.println("No records to remove!");
+            System.out.println("No records to remove!\n");
             return;
         }
 
@@ -54,14 +70,13 @@ public class Application {
             return;
         }
 
-        if (phoneBook.removeContact(selectedRecordIndex)) {
-            System.out.println("The record removed!");
-        }
+        phoneBook.removeRecord(selectedRecordIndex);
+        System.out.println("The record removed!\n");
     }
 
     private void editContact() {
         if (phoneBook.getRecordsCount() == 0) {
-            System.out.println("No records to edit!");
+            System.out.println("No records to edit!\n");
             return;
         }
 
@@ -70,37 +85,46 @@ public class Application {
             return;
         }
 
-        System.out.print(editMenu);
+        Menu activeMenu = phoneBook.isPerson(selectedRecordIndex) ? personEditMenu : businessEditMenu;
+        System.out.print(activeMenu);
         String input = scanner.nextLine().toLowerCase().strip();
-        editMenu.execute(input);
+        activeMenu.execute(input);
     }
 
     private void updateNumber() {
-        System.out.print("Enter number: ");
-        String newNumber = scanner.nextLine();
-        if (PhoneBook.isNotValidNumber(newNumber)) {
-            System.out.println("Wrong number format!");
-            newNumber = "";
-        }
-        if (phoneBook.updatePhoneNumber(selectedRecordIndex, newNumber)) {
-            System.out.println("The record updated!");
-        }
+        String newNumber = readPhoneNumber("Enter number: ");
+        phoneBook.updateNumber(selectedRecordIndex, newNumber);
+        System.out.println("The record updated!\n");
     }
 
     private void updateSurname() {
-        System.out.print("Enter surname: ");
-        String newSurname = scanner.nextLine();
-        if (phoneBook.updateLastName(selectedRecordIndex, newSurname)) {
-            System.out.println("The record updated!");
-        }
+        String newSurname = readString("Enter surname: ");
+        phoneBook.updateSurname(selectedRecordIndex, newSurname);
+        System.out.println("The record updated!\n");
+    }
+
+    private void updateBirthDate() {
+        LocalDate newDate = readDate("Enter birthdate: ");
+        phoneBook.updateBirthDate(selectedRecordIndex, newDate);
+        System.out.println("The record updated!\n");
+    }
+
+    private void updateGender() {
+        String newGender = readGender("Enter gender (M, F): ");
+        phoneBook.updateGender(selectedRecordIndex, newGender);
+        System.out.println("The record updated!\n");
     }
 
     private void updateName() {
-        System.out.print("Enter name: ");
-        String newName = scanner.nextLine();
-        if (phoneBook.updateFirstName(selectedRecordIndex, newName)) {
-            System.out.println("The record updated!");
-        }
+        String newName = readString("Enter name: ");
+        phoneBook.updateName(selectedRecordIndex, newName);
+        System.out.println("The record updated!\n");
+    }
+
+    private void updateAddress() {
+        String newAddress = readString("Enter address: ");
+        phoneBook.updateAddress(selectedRecordIndex, newAddress);
+        System.out.println("The record updated!\n");
     }
 
     private void readContactId() {
@@ -115,35 +139,102 @@ public class Application {
     }
 
     private void addContact() {
-        System.out.print("Enter the name: ");
-        String name = scanner.nextLine();
-        System.out.print("Enter the surname: ");
-        String surname = scanner.nextLine();
-        System.out.print("Enter the number: ");
-        String number = scanner.nextLine();
+        System.out.print(recordSelectMenu);
+        String input = scanner.nextLine().strip().toLowerCase();
+        recordSelectMenu.execute(input);
+    }
 
-        if (PhoneBook.isNotValidNumber(number)) {
-            number = "";
-            System.out.println("Wrong number format!");
+    private void addPerson() {
+        String name = readString("Enter the name: ");
+        String surname = readString("Enter the surname: ");
+        LocalDate date = readDate("Enter the birth date: ");
+        String gender = readGender("Enter the gender (M, F): ");
+        String number = readPhoneNumber("Enter the number: ");
+
+        Person newPerson = Person.builder()
+                .setName(name)
+                .setSurname(surname)
+                .setBirthDate(date)
+                .setGender(gender)
+                .setNumber(number)
+                .setCreated(LocalDateTime.now())
+                .build();
+
+        phoneBook.addRecord(newPerson);
+        System.out.println("The record added.\n");
+    }
+
+    private void addOrganization() {
+        String name = readString("Enter the organization name: ");
+        String address = readString("Enter the address: ");
+        String number = readPhoneNumber("Enter the number: ");
+
+        Business newBusiness = Business.builder()
+                .setName(name)
+                .setAddress(address)
+                .setNumber(number)
+                .setCreated(LocalDateTime.now())
+                .build();
+
+        phoneBook.addRecord(newBusiness);
+        System.out.println("The record added.\n");
+    }
+
+    private String readString(String prompt) {
+        System.out.print(prompt);
+        return scanner.nextLine().strip();
+    }
+
+    private String readGender(String prompt) {
+        System.out.print(prompt);
+        String gender = scanner.nextLine().strip();
+        if (!gender.matches("[MF]")) {
+            System.out.println("Bad gender!");
+            return null;
         }
+        return gender;
+    }
 
-        if (phoneBook.addContact(new Contact(name, surname, number))) {
-            System.out.println("The record added.");
+    private String readPhoneNumber(String prompt) {
+        System.out.print(prompt);
+        String number = scanner.nextLine().strip();
+        if (PhoneBook.isNotValidNumber(number)) {
+            System.out.println("Wrong number format!");
+            return null;
+        } else {
+            return number;
         }
     }
 
-    private void listContacts() {
-        List<String> list = phoneBook.getContactsList();
-        if (list.isEmpty()) {
-            System.out.println("No records to list!");
-        } else {
-            list.forEach(System.out::println);
+    private LocalDate readDate(String prompt) {
+        System.out.print(prompt);
+        String dateAsString = scanner.nextLine().trim();
+        try {
+            return LocalDate.parse(dateAsString);
+        } catch (DateTimeParseException e) {
+            System.out.println("Bad birth date!");
+            return null;
         }
+    }
+
+    private void getInfo() {
+        if (phoneBook.getRecordsCount() == 0) {
+            System.out.println("No records to list!\n");
+            return;
+        }
+
+        readContactId();
+        System.out.println(phoneBook.getRecord(selectedRecordIndex) + "\n");
+    }
+
+    private void listContacts() {
+        List<String> list = phoneBook.getRecordsList();
+        list.forEach(System.out::println);
     }
 
     private void getContactsCount() {
         int count = phoneBook.getRecordsCount();
-        System.out.println("The Phone Book has " + count + " records.");
+        System.out.println("The Phone Book has " + count + " records.\n");
     }
 
     private void exit() {
