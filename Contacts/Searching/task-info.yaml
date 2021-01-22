@@ -746,6 +746,9 @@ files:
 
     }
   learner_created: true
+- name: src/contacts/EditableRecord.java
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/43/stages/231/implement#comment
 status: Unchecked
 record: -1

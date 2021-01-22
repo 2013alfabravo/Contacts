@@ -1,6 +1,11 @@
 package contacts;
 
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Business extends Record {
     private String address;
@@ -15,6 +20,16 @@ public class Business extends Record {
         this.address = address;
     }
 
+    @Override
+    public List<String> getEditableFieldNames() {
+        List<String> fieldNames = Arrays.stream(this.getClass().getDeclaredFields())
+                .map(Field::getName)
+                .collect(Collectors.toList());
+        fieldNames.addAll(super.getEditableFieldNames());
+        fieldNames = Collections.unmodifiableList(fieldNames);
+        return fieldNames;
+    }
+
     public String getAddress() {
         return getOrDefault(address);
     }
@@ -22,11 +37,6 @@ public class Business extends Record {
     public void setAddress(String address) {
         this.address = address;
         updateLastModified();
-    }
-
-    @Override
-    public Boolean isPerson() {
-        return false;
     }
 
     @Override
@@ -46,7 +56,7 @@ public class Business extends Record {
         private String name;
         private String address;
         private String number;
-        private LocalDateTime created;
+        private LocalDateTime created = LocalDateTime.now();
 
         public Builder setName(String name) {
             this.name = name;

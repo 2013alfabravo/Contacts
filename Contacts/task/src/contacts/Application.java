@@ -38,7 +38,7 @@ public class Application {
                 .addMenuItem("remove", this::removeContact)
                 .addMenuItem("edit", this::editContact)
                 .addMenuItem("count", this::getContactsCount)
-                .addMenuItem("info", this::getInfo) // fixme make getInfo()!!
+                .addMenuItem("info", this::getInfo)
                 .addMenuItem("exit", this::exit);
 
         personEditMenu = new Menu().setTitle("Select a field")
@@ -85,7 +85,7 @@ public class Application {
             return;
         }
 
-        Menu activeMenu = phoneBook.isPerson(selectedRecordIndex) ? personEditMenu : businessEditMenu;
+        Menu activeMenu = personEditMenu; // fixme got rid of isPerson() and needs fixing the logic
         System.out.print(activeMenu);
         String input = scanner.nextLine().toLowerCase().strip();
         activeMenu.execute(input);
@@ -187,7 +187,7 @@ public class Application {
 
     private String readGender(String prompt) {
         System.out.print(prompt);
-        String gender = scanner.nextLine().strip();
+        String gender = scanner.nextLine().strip().toUpperCase();
         if (!gender.matches("[MF]")) {
             System.out.println("Bad gender!");
             return null;

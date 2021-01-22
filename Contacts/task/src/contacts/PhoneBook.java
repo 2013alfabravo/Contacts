@@ -60,13 +60,9 @@ public class PhoneBook {
         business.setAddress(newAddress);
     }
 
-    public boolean isPerson(int index) {
-        return contacts.get(index).isPerson();
-    }
-
     public void updateBirthDate(int index, LocalDate newDate) {
         Person person = (Person) contacts.get(index);
-        person.setBirthDate(newDate);
+        person.setBirth(newDate);
     }
 
     public void updateGender(int index, String gender) {
