@@ -1,6 +1,5 @@
 package contacts;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,32 +35,12 @@ public class PhoneBook {
         return list;
     }
 
+    public EditableRecord getRecord(int index) {
+        return records.get(index);
+    }
+
     public void removeRecord(int index) {
         records.remove(index);
     }
 
-    // TODO should replace with one generic method 'updateField'
-    public void updateName(int index, String newName) {
-        records.get(index).setFieldValue("name", newName);
-    }
-
-    public void updateSurname(int index, String newSurname) {
-        records.get(index).setFieldValue("surname", newSurname);
-    }
-
-    public void updateNumber(int index, String newNumber) {
-        records.get(index).setFieldValue("number", newNumber);
-    }
-
-    public void updateAddress(int index, String newAddress) {
-        records.get(index).setFieldValue("address", newAddress);
-    }
-
-    public void updateBirthDate(int index, LocalDate newDate) {
-        records.get(index).setFieldValue("birth", newDate);
-    }
-
-    public void updateGender(int index, String gender) {
-        records.get(index).setFieldValue("gender", gender);
-    }
 }

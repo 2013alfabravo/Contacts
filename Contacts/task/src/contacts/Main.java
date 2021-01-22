@@ -3,7 +3,6 @@ package contacts;
 public class Main {
 
     public static void main(String[] args) {
-//        new Application(new PhoneBook()).run();
-
+        new Application(new PhoneBook()).run();
     }
 }

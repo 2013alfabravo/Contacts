@@ -32,6 +32,7 @@ public abstract class Record implements EditableRecord {
         Field requiredField = getFieldByName(fieldName);
 
         try {
+            requiredField.setAccessible(true);
             requiredField.set(this, value);
             updateLastModified();
         } catch (IllegalAccessException | IllegalArgumentException e) {
