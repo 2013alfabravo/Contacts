@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public class Business extends Record {
     private String address;
 
-    private Business(String name,
+    public Business(String name,
                     String address,
                     String number,
                     LocalDateTime created) {
@@ -22,7 +22,7 @@ public class Business extends Record {
 
     @Override
     public List<String> getEditableFieldNames() {
-        List<String> fieldNames = Arrays.stream(this.getClass().getDeclaredFields())
+        List<String> fieldNames = Arrays.stream(Business.class.getDeclaredFields())
                 .map(Field::getName)
                 .collect(Collectors.toList());
         fieldNames.addAll(super.getEditableFieldNames());

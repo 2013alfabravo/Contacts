@@ -33,12 +33,11 @@ public class Application {
     }
 
     private void buildMenu() {
-        mainMenu = new Menu().setTitle("Enter action")
+        mainMenu = new Menu().setTitle("[menu] Enter action")
                 .addMenuItem("add", this::addContact)
-                .addMenuItem("remove", this::removeContact)
-                .addMenuItem("edit", this::editContact)
+                .addMenuItem("list", this::listContacts)
+                .addMenuItem("search", this::editContact)
                 .addMenuItem("count", this::getContactsCount)
-                .addMenuItem("info", this::getInfo)
                 .addMenuItem("exit", this::exit);
 
         personEditMenu = new Menu().setTitle("Select a field")
@@ -224,7 +223,7 @@ public class Application {
         }
 
         readContactId();
-        System.out.println(phoneBook.getRecord(selectedRecordIndex) + "\n");
+        System.out.println(phoneBook.getRecordAsString(selectedRecordIndex) + "\n");
     }
 
     private void listContacts() {

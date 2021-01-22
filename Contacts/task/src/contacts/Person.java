@@ -13,7 +13,7 @@ public class Person extends Record {
     private LocalDate birth;
     private String gender;
 
-    private Person(String name,
+    public Person(String name,
                    String surname,
                    LocalDate birth,
                    String gender,
@@ -29,7 +29,7 @@ public class Person extends Record {
 
     @Override
     public List<String> getEditableFieldNames() {
-        List<String> fieldNames = Arrays.stream(this.getClass().getDeclaredFields())
+        List<String> fieldNames = Arrays.stream(Person.class.getDeclaredFields())
                 .map(Field::getName)
                 .collect(Collectors.toList());
         fieldNames.addAll(super.getEditableFieldNames());
@@ -61,7 +61,7 @@ public class Person extends Record {
     }
 
     @Override
-    public String getName() {
+    public String getFullName() {
         return name + " " + surname;
     }
 

@@ -22,6 +22,7 @@ public abstract class Record implements EditableRecord {
         this.number = number;
     }
 
+    // TODO do we really need this method if we cannot simply use this list to build a menu?
     public List<String> getEditableFieldNames() {
         return List.of("name", "number");
     }
@@ -33,8 +34,8 @@ public abstract class Record implements EditableRecord {
         try {
             requiredField.set(this, value);
             updateLastModified();
-        } catch (IllegalAccessException e) {
-            throw new IllegalArgumentException("Illegal access");
+        } catch (IllegalAccessException | IllegalArgumentException e) {
+            throw new IllegalArgumentException("Illegal access to field " + fieldName + ", Reason: " + e.getMessage());
         }
     }
 
@@ -45,7 +46,7 @@ public abstract class Record implements EditableRecord {
         try {
             return requiredField.get(this);
         } catch (IllegalAccessException e) {
-            throw new IllegalArgumentException("Illegal access");
+            throw new IllegalArgumentException("Illegal access to field " + fieldName + ", Reason: " + e.getMessage());
         }
     }
 
@@ -79,6 +80,11 @@ public abstract class Record implements EditableRecord {
 
     public String getName() {
         return getOrDefault(name);
+    }
+
+    @Override
+    public String getFullName() {
+        return getName();
     }
 
     public String getNumber() {
