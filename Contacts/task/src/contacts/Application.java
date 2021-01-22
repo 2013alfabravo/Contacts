@@ -13,6 +13,7 @@ public class Application {
     private Menu listMenu;
     private Menu recordMenu;
     private Menu recordSelectMenu;
+    private Menu searchMenu;
     private final PhoneBook phoneBook;
     private int selectedRecordIndex;
     private boolean isRunning;
@@ -35,17 +36,23 @@ public class Application {
         }
     }
 
+    // TODO consider introducing ListView, RecordEditor and SearchEngine classes to make this one less bloated
     private void buildMenu() {
         mainMenu = new Menu().setTitle("[menu] Enter action")
                 .addMenuItem("add", this::addRecord)
                 .addMenuItem("list", this::listRecords)
-                .addMenuItem("search", this::editRecord)
+                .addMenuItem("search", this::search)
                 .addMenuItem("count", this::getContactsCount)
                 .addMenuItem("exit", this::exit);
 
         listMenu = new Menu().setTitle("[list] Enter action")
                 .addMenuItem("[number]", "\\d", this::showRecord)
                 .addMenuItem("back", this::doMainLoop);
+
+        searchMenu = new Menu().setTitle("[search] Enter action")
+                .addMenuItem("[number]", "\\d", this::showRecord)
+                .addMenuItem("back", this::doMainLoop)
+                .addMenuItem("again", this::search);
 
         recordMenu = new Menu().setTitle("[record] Enter action")
                 .addMenuItem("edit", this::editRecord)
@@ -55,12 +62,36 @@ public class Application {
         recordSelectMenu = new Menu().setTitle("Enter the type")
                 .addMenuItem("person", this::addPerson)
                 .addMenuItem("organization", this::addOrganization);
-
     }
 
     private void removeRecord() {
         phoneBook.removeRecord(selectedRecordIndex);
         System.out.println("The record removed!\n");
+    }
+
+    private void search() {
+        if (phoneBook.getRecordsCount() == 0) {
+            System.out.println("No records to search!\n");
+            return;
+        }
+
+        String query = readString("Enter search query: ");
+        List<SearchResult> results = phoneBook.getSearchResults(query);
+        System.out.println("Found " + results.size() + " results:");
+
+        if (results.size() == 0) {
+            return;
+        }
+
+        results.forEach(result -> System.out.println(result.getText()));
+
+        System.out.println();
+        System.out.print(searchMenu);
+        String input = readString("");
+        if (input.matches("\\d")) {
+            selectedRecordIndex = results.get(Integer.parseInt(input) - 1).getIndex();
+        }
+        searchMenu.execute(input);
     }
 
     private void editRecord() {

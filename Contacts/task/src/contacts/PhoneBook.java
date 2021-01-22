@@ -2,6 +2,7 @@ package contacts;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class PhoneBook {
     private static final String VALID_PHONE_NUMBER_FORMAT =
@@ -33,6 +34,24 @@ public class PhoneBook {
         }
 
         return list;
+    }
+
+    public List<SearchResult> getSearchResults(String query) {
+        List<SearchResult> results = new ArrayList<>();
+        int counter = 1;
+        String regex = "(?i).*" + query + ".*";
+
+        for (int index = 0; index < records.size(); index++) {
+            EditableRecord record = records.get(index);
+            String fullName = record.getFullName();
+            // fixme phone number is represented without any formatting characters, check if it works for tests
+            String phoneNumber = ((Record) records.get(index)).getNumber().replaceAll("[+\\-\\s()]", "");
+            if (Pattern.matches(regex, fullName) || Pattern.matches(regex, phoneNumber)) {
+                results.add(new SearchResult(counter++, fullName, index));
+            }
+        }
+
+        return results;
     }
 
     public EditableRecord getRecord(int index) {
