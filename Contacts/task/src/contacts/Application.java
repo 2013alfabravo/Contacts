@@ -112,7 +112,7 @@ public class Application {
 
     void addRecord() {
         view.print(recordSelectMenu);
-        String input = scanner.nextLine().strip().toLowerCase();
+        String input = view.readText("").toLowerCase();
         recordSelectMenu.execute(input);
     }
 

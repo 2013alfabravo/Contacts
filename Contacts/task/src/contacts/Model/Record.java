@@ -56,7 +56,7 @@ public abstract class Record implements EditableRecord {
 
         while (currentClass != Object.class) {
             requiredField = Arrays.stream(currentClass.getDeclaredFields())
-                    .filter(field -> field.getName().equals(fieldName))
+                    .filter(field -> field.getName().equalsIgnoreCase(fieldName))
                     .findFirst();
 
             if (requiredField.isPresent()) {
