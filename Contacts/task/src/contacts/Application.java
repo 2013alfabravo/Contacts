@@ -38,27 +38,26 @@ public class Application {
 
     // TODO consider introducing ListView, RecordEditor and SearchEngine classes to make this one less bloated
 
-    // FIXME fix blank lines in all views by adding '\n' at the beginning of each menu title, i.e. \n[menu], etc.
-    //  and remove println() from any places
+    // FIXME add input checks for item selection in lists
 
     private void buildMenu() {
-        mainMenu = new Menu().setTitle("[menu] Enter action")
+        mainMenu = new Menu().setTitle("\n[menu] Enter action")
                 .addMenuItem("add", this::addRecord)
                 .addMenuItem("list", this::listRecords)
                 .addMenuItem("search", this::search)
                 .addMenuItem("count", this::getContactsCount)
                 .addMenuItem("exit", this::exit);
 
-        listMenu = new Menu().setTitle("[list] Enter action")
+        listMenu = new Menu().setTitle("\n[list] Enter action")
                 .addMenuItem("[number]", "\\d", this::showRecord)
                 .addMenuItem("back", this::doMainLoop);
 
-        searchMenu = new Menu().setTitle("[search] Enter action")
+        searchMenu = new Menu().setTitle("\n[search] Enter action")
                 .addMenuItem("[number]", "\\d", this::showRecord)
                 .addMenuItem("back", this::doMainLoop)
                 .addMenuItem("again", this::search);
 
-        recordMenu = new Menu().setTitle("[record] Enter action")
+        recordMenu = new Menu().setTitle("\n[record] Enter action")
                 .addMenuItem("edit", this::editRecord)
                 .addMenuItem("delete", this::removeRecord)
                 .addMenuItem("menu", this::doMainLoop);
@@ -70,12 +69,12 @@ public class Application {
 
     private void removeRecord() {
         phoneBook.removeRecord(selectedRecordIndex);
-        System.out.println("The record removed!\n");
+        System.out.println("The record removed!");
     }
 
     private void search() {
         if (phoneBook.getRecordsCount() == 0) {
-            System.out.println("No records to search!\n");
+            System.out.println("No records to search!");
             return;
         }
 
@@ -89,7 +88,6 @@ public class Application {
 
         results.forEach(result -> System.out.println(result.getText()));
 
-        System.out.println();
         System.out.print(searchMenu);
         String input = readString("");
         if (input.matches("\\d")) {
@@ -122,7 +120,6 @@ public class Application {
         System.out.println("Saved");
 
         System.out.println(record);
-        System.out.println();
         showRecordMenu();
     }
 
@@ -149,7 +146,7 @@ public class Application {
                 .build();
 
         phoneBook.addRecord(newPerson);
-        System.out.println("The record added.\n");
+        System.out.println("The record added.");
     }
 
     private void addOrganization() {
@@ -165,7 +162,7 @@ public class Application {
                 .build();
 
         phoneBook.addRecord(newBusiness);
-        System.out.println("The record added.\n");
+        System.out.println("The record added.");
     }
 
     private String readString(String prompt) {
@@ -207,13 +204,12 @@ public class Application {
 
     private void listRecords() {
         if (phoneBook.getRecordsCount() == 0) {
-            System.out.println("No records to list!\n");
+            System.out.println("No records to list!");
             return;
         }
 
         List<String> list = phoneBook.getRecordsList();
         list.forEach(System.out::println);
-        System.out.println();
         showListMenu();
     }
 
@@ -222,28 +218,25 @@ public class Application {
         String input = readString("");
         if (input.matches("\\d")) {
             selectedRecordIndex = Integer.parseInt(input) - 1;
-        } else {
-            System.out.println();
         }
 
         listMenu.execute(input);
     }
 
     private void showRecord() {
-        System.out.println(phoneBook.getRecordAsString(selectedRecordIndex) + "\n");
+        System.out.println(phoneBook.getRecordAsString(selectedRecordIndex));
         showRecordMenu();
     }
 
     private void showRecordMenu() {
         System.out.print(recordMenu);
         String input = readString("");
-//        System.out.println();
         recordMenu.execute(input);
     }
 
     private void getContactsCount() {
         int count = phoneBook.getRecordsCount();
-        System.out.println("The Phone Book has " + count + " records.\n");
+        System.out.println("The Phone Book has " + count + " records.");
     }
 
     private void exit() {
