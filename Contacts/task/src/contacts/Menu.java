@@ -11,10 +11,12 @@ public class Menu {
 
     private static class MenuItem {
         private final String title;
+        private final String actionKey;
         private final Action action;
 
-        private MenuItem(String title, Action action) {
+        private MenuItem(String title, String actionKey, Action action) {
             this.title = title;
+            this.actionKey = actionKey;
             this.action = action;
         }
 
@@ -29,13 +31,18 @@ public class Menu {
     }
 
     public Menu addMenuItem(String title, Action action) {
-        items.add(new MenuItem(title, action));
+        items.add(new MenuItem(title, title, action));
+        return this;
+    }
+
+    public Menu addMenuItem(String title, String actionKey, Action action) {
+        items.add(new MenuItem(title, actionKey, action));
         return this;
     }
 
     public void execute(String title) {
         Optional<MenuItem> item = items.stream()
-                .filter(it -> it.title.equals(title))
+                .filter(it -> title.matches(it.actionKey))
                 .findFirst();
 
         item.ifPresent(MenuItem::execute);

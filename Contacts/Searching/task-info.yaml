@@ -13,50 +13,6 @@ files:
         }
     }
   learner_created: false
-- name: src/contacts/Contact.java
-  visible: true
-  text: |
-    package contacts;
-
-    public class Contact {
-        private static final String NO_NUMBER = "[no number]";
-
-        private String firstName;
-        private String lastName;
-        private String phoneNumber;
-
-        public Contact(String firstName, String lastName, String phoneNumber) {
-            this.firstName = firstName;
-            this.lastName = lastName;
-            if (phoneNumber.isEmpty()) {
-                this.phoneNumber = NO_NUMBER;
-            } else {
-                this.phoneNumber = phoneNumber;
-            }
-        }
-
-        public void setFirstName(String firstName) {
-            this.firstName = firstName;
-        }
-
-        public void setLastName(String lastName) {
-            this.lastName = lastName;
-        }
-
-        public void setPhoneNumber(String phoneNumber) {
-            if (phoneNumber.isEmpty()) {
-                this.phoneNumber = NO_NUMBER;
-            } else {
-                this.phoneNumber = phoneNumber;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return firstName + " " + lastName + ", " + phoneNumber;
-        }
-    }
-  learner_created: false
 - name: src/contacts/Menu.java
   visible: true
   text: |
@@ -525,6 +481,280 @@ files:
     \        }\n        catch (Exception ex) {\n            return new CheckResult(false,\
     \ \"Can't check the answer\");\n        }\n    }\n}\n"
   learner_created: false
+- name: src/contacts/Business.java
+  visible: true
+  text: |
+    package contacts;
+
+    import java.time.LocalDateTime;
+
+    public class Business extends Record {
+        private String address;
+
+        private Business(String name,
+                        String address,
+                        String number,
+                        LocalDateTime created) {
+
+            super(name, number, created);
+            this.name = name;
+            this.address = address;
+        }
+
+        public String getAddress() {
+            return getOrDefault(address);
+        }
+
+        public void setAddress(String address) {
+            this.address = address;
+            updateLastModified();
+        }
+
+        @Override
+        public Boolean isPerson() {
+            return false;
+        }
+
+        @Override
+        public String toString() {
+            return "Organization name: " + super.getName() + "\n" +
+                    "Address: " + getAddress() + "\n" +
+                    "Number: " + super.getNumber() + "\n" +
+                    "Time created: " + super.getTimeCreatedAsString() + "\n" +
+                    "Time last edit: " + super.getTimeLastModifiedAsString();
+        }
+
+        public static Business.Builder builder() {
+            return new Builder();
+        }
+
+        static class Builder {
+            private String name;
+            private String address;
+            private String number;
+            private LocalDateTime created;
+
+            public Builder setName(String name) {
+                this.name = name;
+                return this;
+            }
+
+            public Builder setAddress(String address) {
+                this.address = address;
+                return this;
+            }
+
+            public Builder setNumber(String number) {
+                this.number = number;
+                return this;
+            }
+
+            public Builder setCreated(LocalDateTime dateTime) {
+                this.created = dateTime;
+                return this;
+            }
+
+            public Business build() {
+                return new Business(name, address, number, created);
+            }
+        }
+    }
+  learner_created: true
+- name: src/contacts/Record.java
+  visible: true
+  text: |
+    package contacts;
+
+    import java.time.LocalDateTime;
+    import java.time.format.DateTimeFormatter;
+
+    public class Record {
+        protected static final String NO_DATA = "[no data]";
+
+        protected String name;
+        protected LocalDateTime created;
+        protected LocalDateTime lastModified;
+        protected String number;
+
+        protected Record(String name, String number, LocalDateTime created) {
+            this.name = name;
+            this.created = created;
+            this.lastModified = created;
+            this.number = number;
+        }
+
+        public Boolean isPerson() {
+            return null;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+            updateLastModified();
+        }
+
+        public String getName() {
+            return getOrDefault(name);
+        }
+
+        public String getNumber() {
+            return getOrDefault(number);
+        }
+
+        public void setNumber(String number) {
+            this.number = number;
+            updateLastModified();
+        }
+
+        protected void updateLastModified() {
+            lastModified = LocalDateTime.now();
+        }
+
+        public String getTimeCreatedAsString() {
+            return created.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm"));
+        }
+
+        public String getTimeLastModifiedAsString() {
+            return lastModified.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm"));
+        }
+
+        protected String getOrDefault(String field) {
+            return field == null || field.isBlank() ? NO_DATA : field;
+        }
+    }
+  learner_created: true
+- name: src/contacts/Person.java
+  visible: true
+  text: |
+    package contacts;
+
+    import java.time.LocalDate;
+    import java.time.LocalDateTime;
+
+    public class Person extends Record {
+        private String surname;
+        private LocalDate birthDate;
+        private String gender;
+
+        private Person(String name,
+                       String surname,
+                       LocalDate birthDate,
+                       String gender,
+                       String number,
+                       LocalDateTime created) {
+
+            super(name, number, created);
+            this.name = name;
+            this.surname = surname;
+            this.birthDate = birthDate;
+            this.gender = gender;
+        }
+
+        public String getSurname() {
+            return getOrDefault(surname);
+        }
+
+        public void setSurname(String surname) {
+            this.surname = surname;
+            updateLastModified();
+        }
+
+        public void setBirthDate(LocalDate birthDate) {
+            this.birthDate = birthDate;
+            updateLastModified();
+        }
+
+        public String getGender() {
+            return getOrDefault(gender);
+        }
+
+        public void setGender(String gender) {
+            this.gender = gender;
+            updateLastModified();
+        }
+
+        @Override
+        public String getName() {
+            return name + " " + surname;
+        }
+
+        @Override
+        public Boolean isPerson() {
+            return true;
+        }
+
+        @Override
+        public String toString() {
+            return "Name: " + super.getName() + "\n" +
+                    "Surname: " + getSurname() + '\n' +
+                    "Birth date: " + getBirthDateAsString() + "\n" +
+                    "Gender: " + getGender() + '\n' +
+                    "Number: " + super.getNumber() + "\n" +
+                    "Time created: " + super.getTimeCreatedAsString() + "\n" +
+                    "Time last edit: " + super.getTimeLastModifiedAsString();
+        }
+
+        public String getBirthDateAsString() {
+            return this.birthDate == null ? "[no data]" : this.birthDate.toString();
+        }
+
+        public static Person.Builder builder() {
+            return new Builder();
+        }
+
+        public static class Builder {
+            private String name;
+            private String surname;
+            private LocalDate birthDate;
+            private String gender;
+            private String number;
+            private LocalDateTime created;
+
+            public Builder setName(String name) {
+                this.name = name;
+                return this;
+            }
+
+            public Builder setSurname(String surname) {
+                this.surname = surname;
+                return this;
+            }
+
+            public Builder setBirthDate(LocalDate date) {
+                this.birthDate = date;
+                return this;
+            }
+
+            public Builder setGender(String gender) {
+                this.gender = gender;
+                return this;
+            }
+
+            public Builder setNumber(String number) {
+                this.number = number;
+                return this;
+            }
+
+            public Builder setCreated(LocalDateTime dateTime) {
+                this.created = dateTime;
+                return this;
+            }
+
+            public Person build() {
+                return new Person(name, surname, birthDate, gender, number, created);
+            }
+        }
+
+    }
+  learner_created: true
+- name: src/contacts/EditableRecord.java
+  visible: true
+  learner_created: true
+- name: src/contacts/SearchResult.java
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/43/stages/231/implement#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations!
+  time: Sat, 23 Jan 2021 19:52:14 UTC
 record: -1

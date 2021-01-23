@@ -1,16 +1,21 @@
 package contacts;
 
+import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Person extends Record {
-    private String surname;
-    private LocalDate birthDate;
-    private String gender;
+    protected String surname;
+    protected LocalDate birth;
+    protected String gender;
 
-    private Person(String name,
+    public Person(String name,
                    String surname,
-                   LocalDate birthDate,
+                   LocalDate birth,
                    String gender,
                    String number,
                    LocalDateTime created) {
@@ -18,41 +23,31 @@ public class Person extends Record {
         super(name, number, created);
         this.name = name;
         this.surname = surname;
-        this.birthDate = birthDate;
+        this.birth = birth;
         this.gender = gender;
+    }
+
+    @Override
+    public List<String> getEditableFieldNames() {
+        List<String> fieldNames = Arrays.stream(Person.class.getDeclaredFields())
+                .map(Field::getName)
+                .collect(Collectors.toList());
+        fieldNames.addAll(super.getEditableFieldNames());
+        fieldNames = Collections.unmodifiableList(fieldNames);
+        return fieldNames;
     }
 
     public String getSurname() {
         return getOrDefault(surname);
     }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
-        updateLastModified();
-    }
-
-    public void setBirthDate(LocalDate birthDate) {
-        this.birthDate = birthDate;
-        updateLastModified();
-    }
-
     public String getGender() {
         return getOrDefault(gender);
     }
 
-    public void setGender(String gender) {
-        this.gender = gender;
-        updateLastModified();
-    }
-
     @Override
-    public String getName() {
+    public String getFullName() {
         return name + " " + surname;
-    }
-
-    @Override
-    public Boolean isPerson() {
-        return true;
     }
 
     @Override
@@ -67,7 +62,7 @@ public class Person extends Record {
     }
 
     public String getBirthDateAsString() {
-        return this.birthDate == null ? "[no data]" : this.birthDate.toString();
+        return this.birth == null ? NO_DATA : this.birth.toString();
     }
 
     public static Person.Builder builder() {
@@ -80,7 +75,7 @@ public class Person extends Record {
         private LocalDate birthDate;
         private String gender;
         private String number;
-        private LocalDateTime created;
+        private LocalDateTime created = LocalDateTime.now();
 
         public Builder setName(String name) {
             this.name = name;
