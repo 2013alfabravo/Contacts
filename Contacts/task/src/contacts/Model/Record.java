@@ -1,4 +1,4 @@
-package contacts;
+package contacts.Model;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
@@ -22,7 +22,6 @@ public abstract class Record implements EditableRecord {
         this.number = number;
     }
 
-    // TODO do we really need this method if we cannot simply use this list to build a menu?
     public List<String> getEditableFieldNames() {
         return List.of("name", "number");
     }

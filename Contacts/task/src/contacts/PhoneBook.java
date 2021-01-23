@@ -1,5 +1,9 @@
 package contacts;
 
+import contacts.Model.EditableRecord;
+import contacts.Model.Record;
+import contacts.Model.SearchResult;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -48,8 +52,8 @@ public class PhoneBook {
         for (int index = 0; index < records.size(); index++) {
             EditableRecord record = records.get(index);
             String fullName = record.getFullName();
-            // fixme phone number is represented without any formatting characters, check if it works for tests
             String phoneNumber = ((Record) records.get(index)).getNumber().replaceAll("[+\\-\\s()]", "");
+
             if (Pattern.matches(regex, fullName) || Pattern.matches(regex, phoneNumber)) {
                 if (fullName.isBlank()) {
                     fullName = "[no data]";

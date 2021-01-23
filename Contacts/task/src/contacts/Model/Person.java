@@ -1,4 +1,4 @@
-package contacts;
+package contacts.Model;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
@@ -65,7 +65,7 @@ public class Person extends Record {
         return this.birth == null ? NO_DATA : this.birth.toString();
     }
 
-    public static Person.Builder builder() {
+    public static Builder builder() {
         return new Builder();
     }
 

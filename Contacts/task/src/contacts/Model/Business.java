@@ -1,4 +1,4 @@
-package contacts;
+package contacts.Model;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
@@ -43,11 +43,11 @@ public class Business extends Record {
                 "Time last edit: " + super.getTimeLastModifiedAsString();
     }
 
-    public static Business.Builder builder() {
+    public static Builder builder() {
         return new Builder();
     }
 
-    static class Builder {
+    public static class Builder {
         private String name;
         private String address;
         private String number;

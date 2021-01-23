@@ -1,4 +1,4 @@
-package contacts;
+package contacts.Menu;
 
 import java.util.ArrayList;
 import java.util.List;

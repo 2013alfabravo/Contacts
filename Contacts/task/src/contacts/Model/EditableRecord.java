@@ -1,7 +1,8 @@
-package contacts;
+package contacts.Model;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public interface EditableRecord {
     List<String> getEditableFieldNames();
 
