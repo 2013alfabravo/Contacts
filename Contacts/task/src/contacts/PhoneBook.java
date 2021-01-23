@@ -29,7 +29,11 @@ public class PhoneBook {
     public List<String> getRecordsList() {
         List<String> list = new ArrayList<>();
         for (int index = 0; index < records.size(); index++) {
-            String item = index + 1 + ". " + records.get(index).getFullName();
+            String fullName = records.get(index).getFullName();
+            if (fullName.isBlank()) {
+                fullName = "[no data]";
+            }
+            String item = index + 1 + ". " + fullName;
             list.add(item);
         }
 
@@ -47,6 +51,9 @@ public class PhoneBook {
             // fixme phone number is represented without any formatting characters, check if it works for tests
             String phoneNumber = ((Record) records.get(index)).getNumber().replaceAll("[+\\-\\s()]", "");
             if (Pattern.matches(regex, fullName) || Pattern.matches(regex, phoneNumber)) {
+                if (fullName.isBlank()) {
+                    fullName = "[no data]";
+                }
                 results.add(new SearchResult(counter++, fullName, index));
             }
         }

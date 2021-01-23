@@ -74,11 +74,6 @@ public abstract class Record implements EditableRecord {
         return requiredField.get();
     }
 
-    public void setName(String name) {
-        this.name = name;
-        updateLastModified();
-    }
-
     public String getName() {
         return getOrDefault(name);
     }
@@ -90,11 +85,6 @@ public abstract class Record implements EditableRecord {
 
     public String getNumber() {
         return getOrDefault(number);
-    }
-
-    public void setNumber(String number) {
-        this.number = number;
-        updateLastModified();
     }
 
     protected void updateLastModified() {

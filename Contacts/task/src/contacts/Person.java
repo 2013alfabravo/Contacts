@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Person extends Record {
-    private String surname;
-    private LocalDate birth;
-    private String gender;
+    protected String surname;
+    protected LocalDate birth;
+    protected String gender;
 
     public Person(String name,
                    String surname,
@@ -41,23 +41,8 @@ public class Person extends Record {
         return getOrDefault(surname);
     }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
-        updateLastModified();
-    }
-
-    public void setBirth(LocalDate birth) {
-        this.birth = birth;
-        updateLastModified();
-    }
-
     public String getGender() {
         return getOrDefault(gender);
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-        updateLastModified();
     }
 
     @Override

@@ -37,6 +37,10 @@ public class Application {
     }
 
     // TODO consider introducing ListView, RecordEditor and SearchEngine classes to make this one less bloated
+
+    // FIXME fix blank lines in all views by adding '\n' at the beginning of each menu title, i.e. \n[menu], etc.
+    //  and remove println() from any places
+
     private void buildMenu() {
         mainMenu = new Menu().setTitle("[menu] Enter action")
                 .addMenuItem("add", this::addRecord)
@@ -218,9 +222,11 @@ public class Application {
         String input = readString("");
         if (input.matches("\\d")) {
             selectedRecordIndex = Integer.parseInt(input) - 1;
+        } else {
+            System.out.println();
         }
-        listMenu.execute(input);    // fixme when back is entered, the main menu is printed on the next line,
-                                    //  without a blank line in between
+
+        listMenu.execute(input);
     }
 
     private void showRecord() {
@@ -231,6 +237,7 @@ public class Application {
     private void showRecordMenu() {
         System.out.print(recordMenu);
         String input = readString("");
+//        System.out.println();
         recordMenu.execute(input);
     }
 

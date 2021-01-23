@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Business extends Record {
-    private String address;
+    protected String address;
 
     public Business(String name,
                     String address,
@@ -32,11 +32,6 @@ public class Business extends Record {
 
     public String getAddress() {
         return getOrDefault(address);
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-        updateLastModified();
     }
 
     @Override
