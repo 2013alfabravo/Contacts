@@ -5,7 +5,7 @@ import contacts.Model.Business;
 import contacts.Model.EditableRecord;
 import contacts.Model.Person;
 import contacts.Model.SearchResult;
-import contacts.UI.ConsoleView;
+import contacts.UI.View;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,7 +15,7 @@ import java.util.Scanner;
 public class Application {
     private static final Scanner scanner = new Scanner(System.in);
 
-    private final ConsoleView view;
+    private final View view;
     private Menu mainMenu;
     private Menu listMenu;
     private Menu recordMenu;
@@ -25,7 +25,7 @@ public class Application {
     private int selectedRecordIndex;
     private boolean isRunning;
 
-    public Application(PhoneBook phoneBook, ConsoleView view) {
+    public Application(PhoneBook phoneBook, View view) {
         this.phoneBook = phoneBook;
         this.view = view;
         this.isRunning = true;
@@ -65,7 +65,7 @@ public class Application {
             return;
         }
 
-        String query = view.readString("Enter search query: ");
+        String query = view.readText("Enter search query: ");
         List<SearchResult> results = phoneBook.getSearchResults(query);
         view.println("Found " + results.size() + " results:");
 
@@ -76,7 +76,7 @@ public class Application {
         results.forEach(result -> view.println(result.getText()));
 
         view.println(searchMenu);
-        String input = view.readString("");
+        String input = view.readText("");
         if (input.matches("\\d")) {
             selectedRecordIndex = results.get(Integer.parseInt(input) - 1).getIndex();
         }
@@ -85,7 +85,7 @@ public class Application {
 
     void editRecord() {
         EditableRecord record = phoneBook.getRecord(selectedRecordIndex);
-        String fieldName = view.readString("Select a field (" +
+        String fieldName = view.readText("Select a field (" +
                 String.join(", ", record.getEditableFieldNames()) + "): ");
 
         Object newValue;
@@ -100,7 +100,7 @@ public class Application {
                 newValue = view.readPhoneNumber("Enter the number: ");
                 break;
             default:
-                newValue = view.readString("Enter " + fieldName + ": ");
+                newValue = view.readText("Enter " + fieldName + ": ");
         }
 
         record.setFieldValue(fieldName, newValue);
@@ -117,8 +117,8 @@ public class Application {
     }
 
     void addPerson() {
-        String name = view.readString("Enter the name: ");
-        String surname = view.readString("Enter the surname: ");
+        String name = view.readText("Enter the name: ");
+        String surname = view.readText("Enter the surname: ");
         LocalDate date = view.readDate("Enter the birth date: ");
         String gender = view.readGender("Enter the gender (M, F): ");
         String number = view.readPhoneNumber("Enter the number: ");
@@ -137,8 +137,8 @@ public class Application {
     }
 
     void addOrganization() {
-        String name = view.readString("Enter the organization name: ");
-        String address = view.readString("Enter the address: ");
+        String name = view.readText("Enter the organization name: ");
+        String address = view.readText("Enter the address: ");
         String number = view.readPhoneNumber("Enter the number: ");
 
         Business newBusiness = Business.builder()
@@ -165,7 +165,7 @@ public class Application {
 
     private void showListMenu() {
         view.print(listMenu);
-        String input = view.readString("");
+        String input = view.readText("");
         if (input.matches("\\d")) {
             selectedRecordIndex = Integer.parseInt(input) - 1;
         }
@@ -180,7 +180,7 @@ public class Application {
 
     private void showRecordMenu() {
         view.print(recordMenu);
-        String input = view.readString("");
+        String input = view.readText("");
         recordMenu.execute(input);
     }
 

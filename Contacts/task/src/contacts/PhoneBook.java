@@ -9,14 +9,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class PhoneBook {
-    private static final String VALID_PHONE_NUMBER_FORMAT =
-            "\\+?(\\([A-Za-z0-9]+\\)([\\s|-]?[A-Za-z0-9]{2,})?|[A-Za-z0-9]+[\\s|-]?(\\([A-Za-z0-9]{2,}\\))?)([\\s|-]?[A-Za-z0-9]{2,})*";
 
     private final List<EditableRecord> records = new ArrayList<>();
-
-    public static boolean isNotValidNumber(String number) {
-        return !number.matches(VALID_PHONE_NUMBER_FORMAT);
-    }
 
     public void addRecord(EditableRecord contact) {
         records.add(contact);
@@ -34,9 +28,6 @@ public class PhoneBook {
         List<String> list = new ArrayList<>();
         for (int index = 0; index < records.size(); index++) {
             String fullName = records.get(index).getFullName();
-            if (fullName.isBlank()) {
-                fullName = "[no data]";
-            }
             String item = index + 1 + ". " + fullName;
             list.add(item);
         }
@@ -55,9 +46,6 @@ public class PhoneBook {
             String phoneNumber = ((Record) records.get(index)).getNumber().replaceAll("[+\\-\\s()]", "");
 
             if (Pattern.matches(regex, fullName) || Pattern.matches(regex, phoneNumber)) {
-                if (fullName.isBlank()) {
-                    fullName = "[no data]";
-                }
                 results.add(new SearchResult(counter++, fullName, index));
             }
         }

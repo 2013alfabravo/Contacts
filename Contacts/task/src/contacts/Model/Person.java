@@ -47,7 +47,7 @@ public class Person extends Record {
 
     @Override
     public String getFullName() {
-        return name + " " + surname;
+        return getOrDefault(name + " " + surname);
     }
 
     @Override

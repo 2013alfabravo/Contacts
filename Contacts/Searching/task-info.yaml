@@ -761,6 +761,9 @@ files:
 - name: src/contacts/MenuType.java
   visible: true
   learner_created: true
+- name: src/contacts/UI/View.java
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/43/stages/231/implement#comment
 status: Solved
 feedback:

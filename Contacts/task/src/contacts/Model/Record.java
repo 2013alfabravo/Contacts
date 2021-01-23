@@ -79,7 +79,7 @@ public abstract class Record implements EditableRecord {
 
     @Override
     public String getFullName() {
-        return getName();
+        return getOrDefault(getName());
     }
 
     public String getNumber() {
