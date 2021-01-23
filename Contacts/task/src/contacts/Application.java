@@ -21,6 +21,7 @@ public class Application {
     private Menu recordMenu;
     private Menu recordSelectMenu;
     private Menu searchMenu;
+    private final String dbFilename;
     private final PhoneBook phoneBook;
     private int selectedRecordIndex;
     private boolean isRunning;
@@ -28,7 +29,16 @@ public class Application {
     public Application(PhoneBook phoneBook, View view) {
         this.phoneBook = phoneBook;
         this.view = view;
-        this.isRunning = true;
+        dbFilename = null;
+        isRunning = true;
+    }
+
+    public Application(String filename, View view) {
+        dbFilename = filename;
+        this.view = view;
+        PhoneBook phoneBook = PhoneBook.fromFile(dbFilename);
+        this.phoneBook = phoneBook == null ? new PhoneBook() : phoneBook;
+        isRunning = true;
     }
 
     public void run() {
@@ -89,7 +99,7 @@ public class Application {
                 String.join(", ", record.getEditableFieldNames()) + "): ");
 
         Object newValue;
-        switch (fieldName) {
+        switch (fieldName.toLowerCase()) {
             case "birth":
                 newValue = view.readDate("Enter the birth date: ");
                 break;
@@ -190,6 +200,7 @@ public class Application {
     }
 
     void exit() {
+        phoneBook.save(dbFilename);
         isRunning = false;
     }
 }

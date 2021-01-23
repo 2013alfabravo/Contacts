@@ -4,12 +4,13 @@ import contacts.Model.EditableRecord;
 import contacts.Model.Record;
 import contacts.Model.SearchResult;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class PhoneBook {
-
+public class PhoneBook implements Serializable {
+    private static final long serialVersionUID = 20210124L;
     private final List<EditableRecord> records = new ArrayList<>();
 
     public void addRecord(EditableRecord contact) {
@@ -61,4 +62,22 @@ public class PhoneBook {
         records.remove(index);
     }
 
+    public void save(String filename) {
+        try (FileOutputStream fos = new FileOutputStream(filename);
+             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+            oos.writeObject(this);
+        } catch (IOException e) {
+            System.err.println("Failed to write " + filename + ". Reason: " + e.getMessage());
+        }
+    }
+
+    public static PhoneBook fromFile(String filename) {
+        try (FileInputStream fis = new FileInputStream(filename);
+        ObjectInputStream ois = new ObjectInputStream(fis)) {
+            return  (PhoneBook) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Failed to read " + filename + ". Reason: " + e.getMessage());
+            return null;
+        }
+    }
 }
