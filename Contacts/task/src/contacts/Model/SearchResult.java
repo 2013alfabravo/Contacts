@@ -1,4 +1,4 @@
-package contacts;
+package contacts.Model;
 
 public class SearchResult {
     private final String text;

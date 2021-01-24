@@ -1,26 +1,41 @@
 package contacts;
 
+import contacts.Menu.Menu;
+import contacts.Model.Business;
+import contacts.Model.EditableRecord;
+import contacts.Model.Person;
+import contacts.Model.SearchResult;
+import contacts.UI.View;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Scanner;
 
 public class Application {
-    private static final Scanner scanner = new Scanner(System.in);
-
+    private static final String DEFAULT_FILENAME = "book.sav";
+    private final View view;
     private Menu mainMenu;
     private Menu listMenu;
     private Menu recordMenu;
     private Menu recordSelectMenu;
     private Menu searchMenu;
+    private String dbFilename;
     private final PhoneBook phoneBook;
     private int selectedRecordIndex;
     private boolean isRunning;
 
-    public Application(PhoneBook phoneBook) {
+    public Application(PhoneBook phoneBook, View view) {
         this.phoneBook = phoneBook;
-        this.isRunning = true;
+        this.view = view;
+        dbFilename = null;
+        isRunning = true;
+    }
+
+    public Application(String filename, View view) {
+        dbFilename = filename;
+        this.view = view;
+        this.phoneBook = loadPhoneBook(filename);
+        isRunning = true;
     }
 
     public void run() {
@@ -28,113 +43,105 @@ public class Application {
         doMainLoop();
     }
 
-    private void doMainLoop() {
+    void doMainLoop() {
         while (isRunning) {
-            System.out.print(mainMenu);
-            String input = scanner.nextLine().toLowerCase().strip();
+            view.print(mainMenu);
+            String input = view.readText().toLowerCase();
             mainMenu.execute(input);
         }
     }
 
-    // TODO consider introducing ListView, RecordEditor and SearchEngine classes to make this one less bloated
-
     // FIXME add input checks for item selection in lists
 
+    private PhoneBook loadPhoneBook(String filename) {
+        PhoneBook phoneBook = PhoneBook.fromFile(filename);
+        if (phoneBook == null) {
+            dbFilename = DEFAULT_FILENAME;
+            view.println("An empty phone book " + DEFAULT_FILENAME + " created");
+            return new PhoneBook();
+        } else {
+            view.println("Open " + filename);
+            return phoneBook;
+        }
+    }
+
     private void buildMenu() {
-        mainMenu = new Menu().setTitle("\n[menu] Enter action")
-                .addMenuItem("add", this::addRecord)
-                .addMenuItem("list", this::listRecords)
-                .addMenuItem("search", this::search)
-                .addMenuItem("count", this::getContactsCount)
-                .addMenuItem("exit", this::exit);
-
-        listMenu = new Menu().setTitle("\n[list] Enter action")
-                .addMenuItem("[number]", "\\d", this::showRecord)
-                .addMenuItem("back", this::doMainLoop);
-
-        searchMenu = new Menu().setTitle("\n[search] Enter action")
-                .addMenuItem("[number]", "\\d", this::showRecord)
-                .addMenuItem("back", this::doMainLoop)
-                .addMenuItem("again", this::search);
-
-        recordMenu = new Menu().setTitle("\n[record] Enter action")
-                .addMenuItem("edit", this::editRecord)
-                .addMenuItem("delete", this::removeRecord)
-                .addMenuItem("menu", this::doMainLoop);
-
-        recordSelectMenu = new Menu().setTitle("Enter the type")
-                .addMenuItem("person", this::addPerson)
-                .addMenuItem("organization", this::addOrganization);
+        mainMenu = MenuFactory.buildMenu(MenuType.MAIN, this);
+        listMenu = MenuFactory.buildMenu(MenuType.LIST, this);
+        searchMenu = MenuFactory.buildMenu(MenuType.SEARCH, this);
+        recordMenu = MenuFactory.buildMenu(MenuType.RECORD, this);
+        recordSelectMenu = MenuFactory.buildMenu(MenuType.SELECT, this);
     }
 
-    private void removeRecord() {
+    void removeRecord() {
         phoneBook.removeRecord(selectedRecordIndex);
-        System.out.println("The record removed!");
+        view.println("The record removed!");
     }
 
-    private void search() {
+    void search() {
         if (phoneBook.getRecordsCount() == 0) {
-            System.out.println("No records to search!");
+            view.println("No records to search!");
             return;
         }
 
-        String query = readString("Enter search query: ");
+        String query = view.readSearchQuery();
         List<SearchResult> results = phoneBook.getSearchResults(query);
-        System.out.println("Found " + results.size() + " results:");
+        view.println("Found " + results.size() + " results:");
 
         if (results.size() == 0) {
             return;
         }
 
-        results.forEach(result -> System.out.println(result.getText()));
+        results.forEach(result -> view.println(result.getText()));
 
-        System.out.print(searchMenu);
-        String input = readString("");
+        view.println(searchMenu);
+        String input = view.readText();
         if (input.matches("\\d")) {
             selectedRecordIndex = results.get(Integer.parseInt(input) - 1).getIndex();
         }
         searchMenu.execute(input);
     }
 
-    private void editRecord() {
+    void editRecord() {
         EditableRecord record = phoneBook.getRecord(selectedRecordIndex);
-        String fieldName = readString("Select a field (" +
-                String.join(", ", record.getEditableFieldNames()) + "): ");
+        view.print("Select a field (" + String.join(", ", record.getEditableFieldNames()) + "): ");
+        String fieldName = view.readText();
 
         Object newValue;
-        switch (fieldName) {
+        switch (fieldName.toLowerCase()) {
             case "birth":
-                newValue = readDate();
+                newValue = view.readDate();
                 break;
             case "gender":
-                newValue = readGender();
+                newValue = view.readGender();
                 break;
             case "number":
-                newValue = readPhoneNumber();
+                newValue = view.readPhoneNumber();
                 break;
             default:
-                newValue = readString("Enter " + fieldName + ": ");
+                view.print("Enter " + fieldName + ": ");
+                newValue = view.readText();
         }
 
         record.setFieldValue(fieldName, newValue);
-        System.out.println("Saved");
+        view.println("Saved");
 
-        System.out.println(record);
+        view.println(record);
         showRecordMenu();
     }
 
-    private void addRecord() {
-        System.out.print(recordSelectMenu);
-        String input = scanner.nextLine().strip().toLowerCase();
+    void addRecord() {
+        view.print(recordSelectMenu);
+        String input = view.readText().toLowerCase();
         recordSelectMenu.execute(input);
     }
 
-    private void addPerson() {
-        String name = readString("Enter the name: ");
-        String surname = readString("Enter the surname: ");
-        LocalDate date = readDate();
-        String gender = readGender();
-        String number = readPhoneNumber();
+    void addPerson() {
+        String name = view.readName();
+        String surname = view.readSurname();
+        LocalDate date = view.readDate();
+        String gender = view.readGender();
+        String number = view.readPhoneNumber();
 
         Person newPerson = Person.builder()
                 .setName(name)
@@ -146,13 +153,13 @@ public class Application {
                 .build();
 
         phoneBook.addRecord(newPerson);
-        System.out.println("The record added.");
+        view.println("The record added.");
     }
 
-    private void addOrganization() {
-        String name = readString("Enter the organization name: ");
-        String address = readString("Enter the address: ");
-        String number = readPhoneNumber();
+    void addOrganization() {
+        String name = view.readBusinessName();
+        String address = view.readAddress();
+        String number = view.readPhoneNumber();
 
         Business newBusiness = Business.builder()
                 .setName(name)
@@ -162,60 +169,23 @@ public class Application {
                 .build();
 
         phoneBook.addRecord(newBusiness);
-        System.out.println("The record added.");
+        view.println("The record added.");
     }
 
-    private String readString(String prompt) {
-        System.out.print(prompt);
-        return scanner.nextLine().strip();
-    }
-
-    private String readGender() {
-        System.out.print("Enter the gender (M, F): ");
-        String gender = scanner.nextLine().strip().toUpperCase();
-        if (!gender.matches("[MF]")) {
-            System.out.println("Bad gender!");
-            return null;
-        }
-        return gender;
-    }
-
-    private String readPhoneNumber() {
-        System.out.print("Enter the number: ");
-        String number = scanner.nextLine().strip();
-        if (PhoneBook.isNotValidNumber(number)) {
-            System.out.println("Wrong number format!");
-            return null;
-        } else {
-            return number;
-        }
-    }
-
-    private LocalDate readDate() {
-        System.out.print("Enter the birth date: ");
-        String dateAsString = scanner.nextLine().trim();
-        try {
-            return LocalDate.parse(dateAsString);
-        } catch (DateTimeParseException e) {
-            System.out.println("Bad birth date!");
-            return null;
-        }
-    }
-
-    private void listRecords() {
+    void listRecords() {
         if (phoneBook.getRecordsCount() == 0) {
-            System.out.println("No records to list!");
+            view.println("No records to list!");
             return;
         }
 
         List<String> list = phoneBook.getRecordsList();
-        list.forEach(System.out::println);
+        list.forEach(view::println);
         showListMenu();
     }
 
     private void showListMenu() {
-        System.out.print(listMenu);
-        String input = readString("");
+        view.print(listMenu);
+        String input = view.readText();
         if (input.matches("\\d")) {
             selectedRecordIndex = Integer.parseInt(input) - 1;
         }
@@ -223,23 +193,26 @@ public class Application {
         listMenu.execute(input);
     }
 
-    private void showRecord() {
-        System.out.println(phoneBook.getRecordAsString(selectedRecordIndex));
+    void showRecord() {
+        view.println(phoneBook.getRecordAsString(selectedRecordIndex));
         showRecordMenu();
     }
 
     private void showRecordMenu() {
-        System.out.print(recordMenu);
-        String input = readString("");
+        view.print(recordMenu);
+        String input = view.readText();
         recordMenu.execute(input);
     }
 
-    private void getContactsCount() {
+    void getRecordsCount() {
         int count = phoneBook.getRecordsCount();
-        System.out.println("The Phone Book has " + count + " records.");
+        view.println("The Phone Book has " + count + " records.");
     }
 
-    private void exit() {
+    void exit() {
+        if (dbFilename != null) {
+            phoneBook.save(dbFilename);
+        }
         isRunning = false;
     }
 }

@@ -1,4 +1,4 @@
-package contacts;
+package contacts.Model;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
@@ -47,7 +47,7 @@ public class Person extends Record {
 
     @Override
     public String getFullName() {
-        return name + " " + surname;
+        return getOrDefault(name + " " + surname);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class Person extends Record {
         return this.birth == null ? NO_DATA : this.birth.toString();
     }
 
-    public static Person.Builder builder() {
+    public static Builder builder() {
         return new Builder();
     }
 

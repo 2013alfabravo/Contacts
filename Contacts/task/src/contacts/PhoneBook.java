@@ -1,18 +1,17 @@
 package contacts;
 
+import contacts.Model.EditableRecord;
+import contacts.Model.Record;
+import contacts.Model.SearchResult;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class PhoneBook {
-    private static final String VALID_PHONE_NUMBER_FORMAT =
-            "\\+?(\\([A-Za-z0-9]+\\)([\\s|-]?[A-Za-z0-9]{2,})?|[A-Za-z0-9]+[\\s|-]?(\\([A-Za-z0-9]{2,}\\))?)([\\s|-]?[A-Za-z0-9]{2,})*";
-
+public class PhoneBook implements Serializable {
+    private static final long serialVersionUID = 20210124L;
     private final List<EditableRecord> records = new ArrayList<>();
-
-    public static boolean isNotValidNumber(String number) {
-        return !number.matches(VALID_PHONE_NUMBER_FORMAT);
-    }
 
     public void addRecord(EditableRecord contact) {
         records.add(contact);
@@ -30,9 +29,6 @@ public class PhoneBook {
         List<String> list = new ArrayList<>();
         for (int index = 0; index < records.size(); index++) {
             String fullName = records.get(index).getFullName();
-            if (fullName.isBlank()) {
-                fullName = "[no data]";
-            }
             String item = index + 1 + ". " + fullName;
             list.add(item);
         }
@@ -48,12 +44,9 @@ public class PhoneBook {
         for (int index = 0; index < records.size(); index++) {
             EditableRecord record = records.get(index);
             String fullName = record.getFullName();
-            // fixme phone number is represented without any formatting characters, check if it works for tests
             String phoneNumber = ((Record) records.get(index)).getNumber().replaceAll("[+\\-\\s()]", "");
+
             if (Pattern.matches(regex, fullName) || Pattern.matches(regex, phoneNumber)) {
-                if (fullName.isBlank()) {
-                    fullName = "[no data]";
-                }
                 results.add(new SearchResult(counter++, fullName, index));
             }
         }
@@ -69,4 +62,22 @@ public class PhoneBook {
         records.remove(index);
     }
 
+    public void save(String filename) {
+        try (FileOutputStream fos = new FileOutputStream(filename);
+             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+            oos.writeObject(this);
+        } catch (IOException e) {
+            System.err.println("Failed to write " + filename + ". Reason: " + e.getMessage());
+        }
+    }
+
+    public static PhoneBook fromFile(String filename) {
+        try (FileInputStream fis = new FileInputStream(filename);
+        ObjectInputStream ois = new ObjectInputStream(fis)) {
+            return  (PhoneBook) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Failed to read " + filename + ". Reason: " + e.getMessage());
+            return null;
+        }
+    }
 }

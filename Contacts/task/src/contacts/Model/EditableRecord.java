@@ -1,8 +1,10 @@
-package contacts;
+package contacts.Model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public interface EditableRecord {
+@SuppressWarnings("unused")
+public interface EditableRecord extends Serializable {
     List<String> getEditableFieldNames();
 
     <T> void setFieldValue(String fieldName, T value);

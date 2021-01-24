@@ -1,4 +1,4 @@
-package contacts;
+package contacts.Menu;
 
 public interface Action {
     void execute();
