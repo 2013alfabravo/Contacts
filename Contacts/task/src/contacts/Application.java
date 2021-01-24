@@ -24,6 +24,8 @@ public class Application {
     private int selectedRecordIndex;
     private boolean isRunning;
 
+    // TODO finish migration to the MVC pattern
+
     public Application(PhoneBook phoneBook, View view) {
         this.phoneBook = phoneBook;
         this.view = view;
@@ -50,8 +52,6 @@ public class Application {
             mainMenu.execute(input);
         }
     }
-
-    // FIXME add input checks for item selection in lists
 
     private PhoneBook loadPhoneBook(String filename) {
         PhoneBook phoneBook = PhoneBook.fromFile(filename);
@@ -94,11 +94,19 @@ public class Application {
 
         results.forEach(result -> view.println(result.getText()));
 
-        view.println(searchMenu);
+        view.print(searchMenu);
         String input = view.readText();
         if (input.matches("\\d")) {
-            selectedRecordIndex = results.get(Integer.parseInt(input) - 1).getIndex();
+            int itemNumber = Integer.parseInt(input);
+            if (itemNumber > 0 && itemNumber <= results.size()) {
+                selectedRecordIndex = results.get(itemNumber - 1).getIndex();
+            } else {
+                input = "";
+            }
+            searchMenu.execute(input);
+            return;
         }
+
         searchMenu.execute(input);
     }
 
@@ -187,7 +195,14 @@ public class Application {
         view.print(listMenu);
         String input = view.readText();
         if (input.matches("\\d")) {
-            selectedRecordIndex = Integer.parseInt(input) - 1;
+            int itemNumber = Integer.parseInt(input);
+            if (itemNumber > 0 && itemNumber <= phoneBook.getRecordsCount()) {
+                selectedRecordIndex = itemNumber - 1;
+            } else {
+                input = "";
+            }
+            listMenu.execute(input);
+            return;
         }
 
         listMenu.execute(input);
