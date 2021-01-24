@@ -10,18 +10,16 @@ import contacts.UI.View;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Scanner;
 
 public class Application {
-    private static final Scanner scanner = new Scanner(System.in);
-
+    private static final String DEFAULT_FILENAME = "book.sav";
     private final View view;
     private Menu mainMenu;
     private Menu listMenu;
     private Menu recordMenu;
     private Menu recordSelectMenu;
     private Menu searchMenu;
-    private final String dbFilename;
+    private String dbFilename;
     private final PhoneBook phoneBook;
     private int selectedRecordIndex;
     private boolean isRunning;
@@ -36,8 +34,7 @@ public class Application {
     public Application(String filename, View view) {
         dbFilename = filename;
         this.view = view;
-        PhoneBook phoneBook = PhoneBook.fromFile(dbFilename);
-        this.phoneBook = phoneBook == null ? new PhoneBook() : phoneBook;
+        this.phoneBook = loadPhoneBook(filename);
         isRunning = true;
     }
 
@@ -49,12 +46,24 @@ public class Application {
     void doMainLoop() {
         while (isRunning) {
             view.print(mainMenu);
-            String input = scanner.nextLine().toLowerCase().strip();
+            String input = view.readText().toLowerCase();
             mainMenu.execute(input);
         }
     }
 
     // FIXME add input checks for item selection in lists
+
+    private PhoneBook loadPhoneBook(String filename) {
+        PhoneBook phoneBook = PhoneBook.fromFile(filename);
+        if (phoneBook == null) {
+            dbFilename = DEFAULT_FILENAME;
+            view.println("An empty phone book " + DEFAULT_FILENAME + " created");
+            return new PhoneBook();
+        } else {
+            view.println("Open " + filename);
+            return phoneBook;
+        }
+    }
 
     private void buildMenu() {
         mainMenu = MenuFactory.buildMenu(MenuType.MAIN, this);
@@ -75,7 +84,7 @@ public class Application {
             return;
         }
 
-        String query = view.readText("Enter search query: ");
+        String query = view.readSearchQuery();
         List<SearchResult> results = phoneBook.getSearchResults(query);
         view.println("Found " + results.size() + " results:");
 
@@ -86,7 +95,7 @@ public class Application {
         results.forEach(result -> view.println(result.getText()));
 
         view.println(searchMenu);
-        String input = view.readText("");
+        String input = view.readText();
         if (input.matches("\\d")) {
             selectedRecordIndex = results.get(Integer.parseInt(input) - 1).getIndex();
         }
@@ -95,22 +104,23 @@ public class Application {
 
     void editRecord() {
         EditableRecord record = phoneBook.getRecord(selectedRecordIndex);
-        String fieldName = view.readText("Select a field (" +
-                String.join(", ", record.getEditableFieldNames()) + "): ");
+        view.print("Select a field (" + String.join(", ", record.getEditableFieldNames()) + "): ");
+        String fieldName = view.readText();
 
         Object newValue;
         switch (fieldName.toLowerCase()) {
             case "birth":
-                newValue = view.readDate("Enter the birth date: ");
+                newValue = view.readDate();
                 break;
             case "gender":
-                newValue = view.readGender("Enter the gender (M, F): ");
+                newValue = view.readGender();
                 break;
             case "number":
-                newValue = view.readPhoneNumber("Enter the number: ");
+                newValue = view.readPhoneNumber();
                 break;
             default:
-                newValue = view.readText("Enter " + fieldName + ": ");
+                view.print("Enter " + fieldName + ": ");
+                newValue = view.readText();
         }
 
         record.setFieldValue(fieldName, newValue);
@@ -122,16 +132,16 @@ public class Application {
 
     void addRecord() {
         view.print(recordSelectMenu);
-        String input = view.readText("").toLowerCase();
+        String input = view.readText().toLowerCase();
         recordSelectMenu.execute(input);
     }
 
     void addPerson() {
-        String name = view.readText("Enter the name: ");
-        String surname = view.readText("Enter the surname: ");
-        LocalDate date = view.readDate("Enter the birth date: ");
-        String gender = view.readGender("Enter the gender (M, F): ");
-        String number = view.readPhoneNumber("Enter the number: ");
+        String name = view.readName();
+        String surname = view.readSurname();
+        LocalDate date = view.readDate();
+        String gender = view.readGender();
+        String number = view.readPhoneNumber();
 
         Person newPerson = Person.builder()
                 .setName(name)
@@ -147,9 +157,9 @@ public class Application {
     }
 
     void addOrganization() {
-        String name = view.readText("Enter the organization name: ");
-        String address = view.readText("Enter the address: ");
-        String number = view.readPhoneNumber("Enter the number: ");
+        String name = view.readBusinessName();
+        String address = view.readAddress();
+        String number = view.readPhoneNumber();
 
         Business newBusiness = Business.builder()
                 .setName(name)
@@ -175,7 +185,7 @@ public class Application {
 
     private void showListMenu() {
         view.print(listMenu);
-        String input = view.readText("");
+        String input = view.readText();
         if (input.matches("\\d")) {
             selectedRecordIndex = Integer.parseInt(input) - 1;
         }
@@ -190,7 +200,7 @@ public class Application {
 
     private void showRecordMenu() {
         view.print(recordMenu);
-        String input = view.readText("");
+        String input = view.readText();
         recordMenu.execute(input);
     }
 
@@ -200,7 +210,9 @@ public class Application {
     }
 
     void exit() {
-        phoneBook.save(dbFilename);
+        if (dbFilename != null) {
+            phoneBook.save(dbFilename);
+        }
         isRunning = false;
     }
 }

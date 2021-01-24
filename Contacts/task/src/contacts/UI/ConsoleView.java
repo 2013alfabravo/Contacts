@@ -9,21 +9,24 @@ public class ConsoleView implements View {
     private static final String VALID_PHONE_NUMBER_FORMAT =
             "\\+?(\\([A-Za-z0-9]+\\)([\\s|-]?[A-Za-z0-9]{2,})?|[A-Za-z0-9]+[\\s|-]?(\\([A-Za-z0-9]{2,}\\))?)([\\s|-]?[A-Za-z0-9]{2,})*";
 
+    @Override
     public void println(Object obj) {
         System.out.println(obj);
     }
 
+    @Override
     public void print(Object obj) {
         System.out.print(obj);
     }
 
-    public String readText(String prompt) {
-        print(prompt);
+    @Override
+    public String readText() {
         return scanner.nextLine().strip();
     }
 
-    public String readGender(String prompt) {
-        print(prompt);
+    @Override
+    public String readGender() {
+        print("Enter the gender (M, F): ");
         String gender = scanner.nextLine().strip().toUpperCase();
         if (!gender.matches("[MF]")) {
             println("Bad gender!");
@@ -32,8 +35,9 @@ public class ConsoleView implements View {
         return gender;
     }
 
-    public String readPhoneNumber(String prompt) {
-        print(prompt);
+    @Override
+    public String readPhoneNumber() {
+        print("Enter the number: ");
         String number = scanner.nextLine().strip();
         if (isNotValidPhoneNumber(number)) {
             println("Wrong number format!");
@@ -47,9 +51,10 @@ public class ConsoleView implements View {
         return !number.matches(VALID_PHONE_NUMBER_FORMAT);
     }
 
-    public LocalDate readDate(String prompt) {
-        System.out.print(prompt);
-        String dateAsString = scanner.nextLine().trim();
+    @Override
+    public LocalDate readDate() {
+        print("Enter the birth date: ");
+        String dateAsString = scanner.nextLine().strip();
         try {
             return LocalDate.parse(dateAsString);
         } catch (DateTimeParseException e) {
@@ -58,4 +63,33 @@ public class ConsoleView implements View {
         }
     }
 
+    @Override
+    public String readBusinessName() {
+        print("Enter the organization name: ");
+        return readText();
+    }
+
+    @Override
+    public String readName() {
+        print("Enter the name: ");
+        return readText();
+    }
+
+    @Override
+    public String readSurname() {
+        print("Enter the surname: ");
+        return readText();
+    }
+
+    @Override
+    public String readAddress() {
+        print("Enter the address: ");
+        return readText();
+    }
+
+    @Override
+    public String readSearchQuery() {
+        print("Enter search query: ");
+        return readText();
+    }
 }
