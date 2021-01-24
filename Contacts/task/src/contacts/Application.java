@@ -96,7 +96,7 @@ public class Application {
 
         view.print(searchMenu);
         String input = view.readText();
-        if (input.matches("\\d")) {
+        if (input.matches("\\d+")) {
             int itemNumber = Integer.parseInt(input);
             if (itemNumber > 0 && itemNumber <= results.size()) {
                 selectedRecordIndex = results.get(itemNumber - 1).getIndex();
@@ -194,7 +194,7 @@ public class Application {
     private void showListMenu() {
         view.print(listMenu);
         String input = view.readText();
-        if (input.matches("\\d")) {
+        if (input.matches("\\d+")) {
             int itemNumber = Integer.parseInt(input);
             if (itemNumber > 0 && itemNumber <= phoneBook.getRecordsCount()) {
                 selectedRecordIndex = itemNumber - 1;

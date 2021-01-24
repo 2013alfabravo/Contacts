@@ -33,13 +33,13 @@ public class MenuFactory {
 
     private static Menu buildListMenu(Application context) {
         return new Menu().setTitle("\n[list] Enter action")
-                .addMenuItem("[number]", "\\d", context::showRecord)
+                .addMenuItem("[number]", "\\d+", context::showRecord)
                 .addMenuItem("back", context::doMainLoop);
     }
 
     private static Menu buildSearchMenu(Application context) {
         return new Menu().setTitle("\n[search] Enter action")
-                .addMenuItem("[number]", "\\d", context::showRecord)
+                .addMenuItem("[number]", "\\d+", context::showRecord)
                 .addMenuItem("back", context::doMainLoop)
                 .addMenuItem("again", context::search);
     }
