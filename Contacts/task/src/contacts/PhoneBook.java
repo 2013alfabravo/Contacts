@@ -67,7 +67,7 @@ public class PhoneBook implements Serializable {
              ObjectOutputStream oos = new ObjectOutputStream(fos)) {
             oos.writeObject(this);
         } catch (IOException e) {
-            System.err.println("Failed to write " + filename + ". Reason: " + e.getMessage());
+            // todo add error logging
         }
     }
 
@@ -76,7 +76,7 @@ public class PhoneBook implements Serializable {
         ObjectInputStream ois = new ObjectInputStream(fis)) {
             return  (PhoneBook) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            System.err.println("Failed to read " + filename + ". Reason: " + e.getMessage());
+            // todo add error logging
             return null;
         }
     }

@@ -3,6 +3,7 @@ package contacts.Menu;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Menu {
@@ -40,9 +41,9 @@ public class Menu {
         return this;
     }
 
-    public void execute(String title) {
+    public void execute(String input) {
         Optional<MenuItem> item = items.stream()
-                .filter(it -> title.matches(it.actionKey))
+                .filter(it -> Pattern.matches(it.actionKey, input))
                 .findFirst();
 
         item.ifPresent(MenuItem::execute);
